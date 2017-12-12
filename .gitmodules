@@ -1,0 +1,6 @@
+[submodule "extern/ida-cmake"]
+	path = extern/ida-cmake
+	url = https://github.com/zyantific/ida-cmake.git
+[submodule "extern/jsoncpp"]
+	path = extern/jsoncpp
+	url = https://github.com/open-source-parsers/jsoncpp.git
