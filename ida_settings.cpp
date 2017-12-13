@@ -25,7 +25,7 @@ bool CIDASettings::resolveHomePath()
 		configpath = std::string(qhome_path.c_str()) + "/.idapro/ps4nidconfig.json";
 		return true;
 	}
-	#elif defined(__WIN32)
+	#elif defined(_WIN32)
 	if(qgetenv("APPDATA", &qhome_path))
 	{
 		configpath = std::string(qhome_path.c_str()) + "/Hex-Rays/IDA Pro/ps4nidconfig.json";

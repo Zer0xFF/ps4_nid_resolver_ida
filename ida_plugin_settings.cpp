@@ -21,7 +21,7 @@ static bool idaapi run(size_t)
 		int buttonID = ASKBTN_CANCEL;
 		if((buttonID = ask_yn(ASKBTN_NO, "Display Library Names?")) != ASKBTN_CANCEL)
 		{
-			settings.setValue("loadklibname", buttonID == ASKBTN_YES ? true : false);
+			settings.setValue("loadlibname", buttonID == ASKBTN_YES ? true : false);
 		}
 	}
 	settings.Save();
