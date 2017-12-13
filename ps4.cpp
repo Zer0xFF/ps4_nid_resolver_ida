@@ -6,6 +6,7 @@
 
 #include <sys/stat.h>
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <json/json.h>
@@ -56,7 +57,7 @@ void CPS4::LoadJsonPath(std::string path)
 int CPS4::isDirectory(const char *path)
 {
 	struct stat statbuf;
-	if (stat(path, &statbuf) != 0)
+	if(stat(path, &statbuf) != 0)
 		return 0;
 	return S_ISDIR(statbuf.st_mode);
 }
@@ -65,7 +66,7 @@ int CPS4::LoadFile(char *file)
 {
 	FILE *f = fopen(file, "rb");
 
-	if (!f)
+	if(!f)
 	{
 		msg("Error opening: %s\n", file);
 		_isLoaded = false;
@@ -151,9 +152,9 @@ bool CPS4::FindJsonSym(const char* path, const char* name, std::string* res)
 {
 	DIR *dir;
 	struct dirent *ent;
-	if ((dir = opendir(path)) != NULL)
+	if((dir = opendir(path)) != NULL)
 	{
-		while((ent = readdir (dir)) != NULL)
+		while((ent = readdir(dir)) != NULL)
 		{
 			if(!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, ".."))
 			{
@@ -193,7 +194,7 @@ int CPS4::GetFW(std::vector<std::string> &list, std::string jsonpath)
 		while((ent = readdir(dir)) != NULL)
 		{
 			std::string file = ent->d_name;
-			if (file.compare(0, 1, ".") == 0)
+			if(file.compare(0, 1, ".") == 0)
 			{
 				continue;
 			}
@@ -365,11 +366,11 @@ void CPS4::LoadSym()
 
 	auto rela = reinterpret_cast<Elf64_Rela*>(&text_buf[pltrela_table_offset + data_addr_off]);
 	auto rela_end = &rela[pltrela_table_size / sizeof(Elf64_Rela)];
-	for (; rela < rela_end; ++rela)
+	for(; rela < rela_end; ++rela)
 	{
 		auto type = rela->getType();
 		uint64_t symval;
-		switch (type)
+		switch(type)
 		{
 			case 7:
 				Elf64_Sym* symbol = &symbols[rela->getSymbol()];
