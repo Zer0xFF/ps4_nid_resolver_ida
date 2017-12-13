@@ -1,9 +1,13 @@
 
 #include "ps4.h"
 #include "elf.h"
+//TODO replace and remove once std::filesystem is out of experimental
+#ifdef _WIN32
+#include "extern/dirent/include/dirent.h"
+#else
 #include <dirent.h>
+#endif
 #include <sys/types.h>
-
 #include <sys/stat.h>
 
 #include <algorithm>

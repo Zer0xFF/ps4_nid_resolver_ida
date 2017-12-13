@@ -4,3 +4,6 @@
 [submodule "extern/jsoncpp"]
 	path = extern/jsoncpp
 	url = https://github.com/open-source-parsers/jsoncpp.git
+[submodule "extern/dirent"]
+	path = extern/dirent
+	url = https://github.com/tronkko/dirent.git
