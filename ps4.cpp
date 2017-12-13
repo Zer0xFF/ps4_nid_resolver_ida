@@ -104,7 +104,7 @@ bool CPS4::LoadHeader()
 		{
 			int x;
 			Elf64_Dyn* dyn;
-			for(x = 0, dyn = (Elf64_Dyn*)&text_buf[segment->p_offset]; x < 100; x++, dyn++)
+			for(x = 0, dyn = (Elf64_Dyn*)&text_buf[segment->p_offset]; x < segment->p_filesz; x++, dyn++)
 			{
 				if(dyn->d_tag == 0x61000037)
 				{
