@@ -5,6 +5,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(JSONCPP_WITH_TESTS OFF )
 set(JSONCPP_WITH_POST_BUILD_UNITTEST OFF)
+if(UNIX AND NOT APPLE)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+endif()
 add_subdirectory(extern/jsoncpp EXCLUDE_FROM_ALL)
 
 add_executable(ps4_nid main.cpp ps4.cpp)

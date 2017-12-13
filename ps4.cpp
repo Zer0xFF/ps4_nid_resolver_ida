@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <cstring>
 #include <json/json.h>
 
 #ifndef __IDP__
