@@ -87,10 +87,10 @@ int CPS4::LoadFile(char *file)
 
 bool CPS4::LoadHeader()
 {
-	Elf64_Ehdr elf_header = *(Elf64_Ehdr*)(text_buf);
+	Elf64_Ehdr* elf_header = reinterpret_cast<Elf64_Ehdr*>(&text_buf[0]);
 	Elf64_Phdr* segment;
 	int i = 0;
-	for(i = 0, segment = (Elf64_Phdr*)&text_buf[elf_header.e_phoff]; i < elf_header.e_phnum; i++, segment++)
+	for(i = 0, segment = reinterpret_cast<Elf64_Phdr*>(&text_buf[elf_header->e_phoff]); i < elf_header->e_phnum; i++, segment++)
 	{
 		if(segment->p_type == 1 && segment->p_vaddr == 0)
 		{
@@ -104,7 +104,7 @@ bool CPS4::LoadHeader()
 		{
 			int x;
 			Elf64_Dyn* dyn;
-			for(x = 0, dyn = (Elf64_Dyn*)&text_buf[segment->p_offset]; x < segment->p_filesz; x++, dyn++)
+			for(x = 0, dyn = reinterpret_cast<Elf64_Dyn*>(&text_buf[segment->p_offset]); x < segment->p_filesz; x++, dyn++)
 			{
 				if(dyn->d_tag == 0x61000037)
 				{
