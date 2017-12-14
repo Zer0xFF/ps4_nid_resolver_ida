@@ -307,15 +307,15 @@ bool CPS4::LoadJsonSymFile(std::string filename, bool clearmap)
 
 void CPS4::LoadSym()
 {
-	auto symbols = reinterpret_cast<Elf64_Sym*>(&text_buf[symbol_table_offset + data_addr_off]);
-	auto symbol_count = symbol_table_size / sizeof(Elf64_Sym);
-	auto symbol_end = &symbols[symbol_count];
-
 	StringTable string_table =
 	{
 		reinterpret_cast<const char*>(&text_buf[string_table_offset + data_addr_off]),
 		static_cast<size_t>(string_table_size),
 	};
+
+	auto symbols = reinterpret_cast<Elf64_Sym*>(&text_buf[symbol_table_offset + data_addr_off]);
+	auto symbol_count = symbol_table_size / sizeof(Elf64_Sym);
+	auto symbol_end = &symbols[symbol_count];
 
 	//Workaround for lib names
 	//Instead of parsing lib names from elf, I'm associating those we identified
