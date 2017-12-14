@@ -277,29 +277,26 @@ bool CPS4::LoadJsonSymFile(std::string filename, bool clearmap)
 	std::ifstream config_doc(filename.c_str(), std::ifstream::binary);
 	config_doc >> root;
 
-	const Json::Value modules = root["modules"];
-	for(int index = 0; index < modules.size(); ++index)
+	for(auto& module : root["modules"])
 	{
-		const Json::Value lib = modules[index]["libraries"];
-		for(int index2 = 0; index2 < lib.size(); ++index2)
+		for(auto& libraries : module["libraries"])
 		{
-			const Json::Value sym = lib[index2]["symbols"];
-			auto libname = lib[index2].get("name","NA").asString();
-			auto isExported = lib[index2].get("is_export", false).asBool();
-			for(int index3 = 0; index3 < sym.size(); ++index3)
+			auto libname = libraries.get("name","NA").asString();
+			auto isExported = libraries.get("is_export", false).asBool();
+			for(auto& symbol : libraries["symbols"])
 			{
-				if(!sym[index3].get("name", "NA" ).asString().empty())
+				if(!symbol.get("name", "NA" ).asString().empty())
 				{
 					if(!isExported && _loadlibs)
 					{
-						nidmap[sym[index3].get("encoded_id", "NA" ).asString()] = libname  + "::" + sym[index3].get("name", "NA" ).asString();
+						nidmap[symbol.get("encoded_id", "NA" ).asString()] = libname  + "::" + symbol.get("name", "NA" ).asString();
 					}
 					else
 					{
-						nidmap[sym[index3].get("encoded_id", "NA" ).asString()] = sym[index3].get("name", "NA" ).asString();
+						nidmap[symbol.get("encoded_id", "NA" ).asString()] = symbol.get("name", "NA" ).asString();
 					}
 					#if 0
-					std::cout << nidmap[sym[index3].get("encoded_id", "NA" ).asString()].c_str() << " NID:" << sym[index3].get("encoded_id", "NA" ).asString() << std::endl;
+					std::cout << nidmap[symbol.get("encoded_id", "NA" ).asString()].c_str() << " NID:" << symbol.get("encoded_id", "NA" ).asString() << std::endl;
 					#endif
 				}
 			}
