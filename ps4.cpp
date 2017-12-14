@@ -88,9 +88,8 @@ int CPS4::LoadFile(char *file)
 bool CPS4::LoadHeader()
 {
 	Elf64_Ehdr* elf_header = reinterpret_cast<Elf64_Ehdr*>(&text_buf[0]);
-	Elf64_Phdr* segment;
-	int i = 0;
-	for(i = 0, segment = reinterpret_cast<Elf64_Phdr*>(&text_buf[elf_header->e_phoff]); i < elf_header->e_phnum; i++, segment++)
+	Elf64_Phdr* segment = reinterpret_cast<Elf64_Phdr*>(&text_buf[elf_header->e_phoff]);
+	for(int i = 0; i < elf_header->e_phnum; i++, segment++)
 	{
 		if(segment->p_type == 1 && segment->p_vaddr == 0)
 		{
@@ -102,9 +101,8 @@ bool CPS4::LoadHeader()
 		}
 		if(segment->p_type == PT_DYNAMIC)
 		{
-			int x;
-			Elf64_Dyn* dyn;
-			for(x = 0, dyn = reinterpret_cast<Elf64_Dyn*>(&text_buf[segment->p_offset]); x < segment->p_filesz; x++, dyn++)
+			Elf64_Dyn* dyn = reinterpret_cast<Elf64_Dyn*>(&text_buf[segment->p_offset]);
+			for(int x = 0; x < segment->p_filesz; x++, dyn++)
 			{
 				if(dyn->d_tag == 0x61000037)
 				{
@@ -132,7 +130,7 @@ bool CPS4::LoadHeader()
 				}
 				if(dyn->d_tag == 0x61000015ll)
 				{
-					_libname_offset.push_back(static_cast<uint32_t>(dyn->d_un.d_val));
+					_libname_count++;
 				}
 			}
 		}
@@ -249,8 +247,7 @@ bool CPS4::LoadJsonSymFW(std::string version, bool clearmap)
 		static_cast<size_t>(string_table_size),
 	};
 
-	int offset = 1;
-	for(int i = _libname_offset.size(); i > 0; --i)
+	for(int i = 0, offset = 1; i < _libname_count; ++i)
 	{
 		std::string libName = string_table.get(offset);
 		offset += libName.length() +1;
@@ -281,15 +278,15 @@ bool CPS4::LoadJsonSymFile(std::string filename, bool clearmap)
 	config_doc >> root;
 
 	const Json::Value modules = root["modules"];
-	for( int index = 0; index < modules.size(); ++index )
+	for(int index = 0; index < modules.size(); ++index)
 	{
 		const Json::Value lib = modules[index]["libraries"];
-		for( int index2 = 0; index2 < lib.size(); ++index2 )
+		for(int index2 = 0; index2 < lib.size(); ++index2)
 		{
 			const Json::Value sym = lib[index2]["symbols"];
 			auto libname = lib[index2].get("name","NA").asString();
 			auto isExported = lib[index2].get("is_export", false).asBool();
-			for( int index3 = 0; index3 < sym.size(); ++index3 )
+			for(int index3 = 0; index3 < sym.size(); ++index3)
 			{
 				if(!sym[index3].get("name", "NA" ).asString().empty())
 				{

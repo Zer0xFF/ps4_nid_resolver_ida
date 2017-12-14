@@ -26,7 +26,6 @@ private:
 	bool FindJsonSym(const char* path, const char* name, std::string* res);
 	std::map<std::string, std::string> nidmap;
 	std::map<std::string, std::string> libmap;
-	std::vector<uint32_t> _libname_offset;
 
 	std::string _jsonpath;
 	std::string sprxfilename;
@@ -35,6 +34,7 @@ private:
 	int addr_off = 0, data_addr_off = 0;
 	int symbol_table_offset = 0, symbol_table_size = 0, string_table_offset = 0, string_table_size = 0;
 	int pltrela_table_offset = 0, pltrela_table_size = 0;
+	int _libname_count = 0;
 	char* text_buf;
 	bool _loadlibs = false;
 
