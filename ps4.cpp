@@ -52,7 +52,7 @@ bool CPS4::isLoaded()
 
 void CPS4::LoadLibNames(bool val)
 {
-	_loadlibs = val;
+	_displayLibName = val;
 }
 
 void CPS4::LoadJsonPath(std::string path)
@@ -287,7 +287,7 @@ bool CPS4::LoadJsonSymFile(std::string filename, bool clearmap)
 			{
 				if(!symbol.get("name", "NA" ).asString().empty())
 				{
-					if(!isExported && _loadlibs)
+					if(!isExported && _displayLibName)
 					{
 						nidmap[symbol.get("encoded_id", "NA" ).asString()] = libname  + "::" + symbol.get("name", "NA" ).asString();
 					}
@@ -317,7 +317,7 @@ void CPS4::LoadSym()
 	auto symbol_count = symbol_table_size / sizeof(Elf64_Sym);
 	auto symbol_end = &symbols[symbol_count];
 
-	if(_loadlibs)
+	if(_displayLibName)
 	{
 		//Workaround for lib names
 		//Instead of parsing lib names from elf, I'm associating those we identified
@@ -363,7 +363,7 @@ void CPS4::LoadSym()
 				if(symbol->st_value != 0)
 				{
 					std::string libName;
-					if(_loadlibs)
+					if(_displayLibName)
 					{
 						auto libCode = candidate_local_name.substr(candidate_local_name.find_first_of("#") + 1, 1);
 						if(!libmap[libCode].empty())
@@ -428,7 +428,7 @@ void CPS4::LoadSym()
 				else
 				{
 					std::string libName;
-					if(_loadlibs)
+					if(_displayLibName)
 					{
 						auto libCode = candidate_local_name.substr(candidate_local_name.find_first_of("#") + 1, 1);
 						if(!libmap[libCode].empty())

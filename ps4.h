@@ -36,7 +36,7 @@ private:
 	int pltrela_table_offset = 0, pltrela_table_size = 0;
 	int _libname_count = 0;
 	char* text_buf;
-	bool _loadlibs = false;
+	bool _displayLibName = false;
 
 	struct StringTable
 	{
