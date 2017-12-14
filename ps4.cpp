@@ -317,26 +317,29 @@ void CPS4::LoadSym()
 	auto symbol_count = symbol_table_size / sizeof(Elf64_Sym);
 	auto symbol_end = &symbols[symbol_count];
 
-	//Workaround for lib names
-	//Instead of parsing lib names from elf, I'm associating those we identified
-	for(Elf64_Sym* symbol = &symbols[0]; symbol != symbol_end; ++symbol)
+	if(_loadlibs)
 	{
-		if(symbol->st_name != 0)
+		//Workaround for lib names
+		//Instead of parsing lib names from elf, I'm associating those we identified
+		for(Elf64_Sym* symbol = &symbols[0]; symbol != symbol_end; ++symbol)
 		{
-			std::string candidate_local_name = string_table.get(symbol->st_name);
-			auto func_name = nidmap[candidate_local_name.substr(0, candidate_local_name.find_first_of("#")).c_str()];
-			if(!func_name.empty())
+			if(symbol->st_name != 0)
 			{
-				auto libCode = candidate_local_name.substr(candidate_local_name.find_first_of("#") + 1, 1);
-				if(!libmap[libCode].empty()) continue;
-
-				auto name = nidmap[candidate_local_name.substr(0, candidate_local_name.find_first_of("#")).substr()];
-				auto npos = name.find_first_of("::");
-				if(npos != std::string::npos)
+				std::string candidate_local_name = string_table.get(symbol->st_name);
+				auto func_name = nidmap[candidate_local_name.substr(0, candidate_local_name.find_first_of("#")).c_str()];
+				if(!func_name.empty())
 				{
-						auto libName = name.substr(0, npos);
-						libmap[libCode] = libName;
-						msg("libCode: %s libName: %s\n", libCode.c_str(), libName.c_str());
+					auto libCode = candidate_local_name.substr(candidate_local_name.find_first_of("#") + 1, 1);
+					if(!libmap[libCode].empty()) continue;
+
+					auto name = nidmap[candidate_local_name.substr(0, candidate_local_name.find_first_of("#")).substr()];
+					auto npos = name.find_first_of("::");
+					if(npos != std::string::npos)
+					{
+							auto libName = name.substr(0, npos);
+							libmap[libCode] = libName;
+							msg("libCode: %s libName: %s\n", libCode.c_str(), libName.c_str());
+					}
 				}
 			}
 		}
