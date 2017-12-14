@@ -13,8 +13,8 @@ public:
 	void LoadLibNames(bool val);
 	void LoadJsonPath(std::string path);
 	bool LoadHeader();
-	bool LoadJsonSymFile(std::string filename);
-	bool LoadJsonSymFW(std::string version);
+	bool LoadJsonSymFile(std::string filename, bool = true);
+	bool LoadJsonSymFW(std::string version, bool = true);
 	void LoadSym();
 	bool isLoaded();
 	
@@ -26,6 +26,7 @@ private:
 	bool FindJsonSym(const char* path, const char* name, std::string* res);
 	std::map<std::string, std::string> nidmap;
 	std::map<std::string, std::string> libmap;
+	std::vector<uint32_t> _libname_offset;
 
 	std::string _jsonpath;
 	std::string sprxfilename;

@@ -130,6 +130,10 @@ bool CPS4::LoadHeader()
 				{
 					pltrela_table_size = dyn->d_un.d_val;
 				}
+				if(dyn->d_tag == 0x61000015ll)
+				{
+					_libname_offset.push_back(static_cast<uint32_t>(dyn->d_un.d_val));
+				}
 			}
 		}
 	}
@@ -216,28 +220,62 @@ int CPS4::GetFW(std::vector<std::string> &list, std::string jsonpath)
 	closedir(dir);
 }
 
-bool CPS4::LoadJsonSymFW(std::string version)
+bool CPS4::LoadJsonSymFW(std::string version, bool clearmap)
 {
-	std::string filename = sprxfilename.substr(sprxfilename.find_last_of("/\\") + 1) + ".json";
+	if(clearmap) nidmap.clear();
 
+	int count = nidmap.size();
 	std::string path = _jsonpath + "/" + version + "/";
-	//replace with `std::filesystem` once out of experimetal
-	std::string res = "";
-	if(FindJsonSym(path.c_str(), filename.c_str(), &res))
+
+	std::string filename = sprxfilename.substr(sprxfilename.find_last_of("/\\") + 1);
+	filename = filename.substr(0, filename.find_first_of(".")) + ".sprx.json";
 	{
-		msg("FileFound: %s\n", res.c_str());
-		return LoadJsonSymFile(res.c_str());
+		msg("libName: %s", filename.c_str());
+		std::string jsonpath = "";
+		if(FindJsonSym(path.c_str(), filename.c_str(), &jsonpath))
+		{
+			msg(" - Found\n");
+			LoadJsonSymFile(jsonpath.c_str(), false);
+		}
+		else
+		{
+			msg(" - Not Found\n");
+		}
 	}
-	else
+
+	StringTable string_table =
 	{
-		msg("failed to find : %s\n", filename.c_str());
+		reinterpret_cast<const char*>(&text_buf[string_table_offset + data_addr_off]),
+		static_cast<size_t>(string_table_size),
+	};
+
+	int offset = 1;
+	for(int i = _libname_offset.size(); i > 0; --i)
+	{
+		std::string libName = string_table.get(offset);
+		offset += libName.length() +1;
+		libName = libName.substr(0, libName.size()-4);
+		libName += ".sprx.json";
+		msg("offset: %d libName: %s", offset, libName.c_str());
+		std::string jsonpath = "";
+		if(FindJsonSym(path.c_str(), libName.c_str(), &jsonpath))
+		{
+			msg(" - Found\n");
+			LoadJsonSymFile(jsonpath.c_str(), false);
+		}
+		else
+		{
+			msg(" - Not Found\n");
+		}
 	}
-	return false;
+
+	return nidmap.size() != 0 && nidmap.size() > count;
 }
 
-bool CPS4::LoadJsonSymFile(std::string filename)
+bool CPS4::LoadJsonSymFile(std::string filename, bool clearmap)
 {
-	nidmap.clear();
+	if(clearmap) nidmap.clear();
+
 	Json::Value root;
 	std::ifstream config_doc(filename.c_str(), std::ifstream::binary);
 	config_doc >> root;
