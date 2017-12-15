@@ -1,5 +1,4 @@
 #include "ps4.h"
-#include "main.h"
 
 int main(int argc, char *argv[])
 {
