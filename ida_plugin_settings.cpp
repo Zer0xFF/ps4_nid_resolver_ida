@@ -40,7 +40,7 @@ plugin_t PLUGIN =
 	// long comment about the plugin
 	// it could appear in the status line
 	// or as a hint
-	"TPS4 NID Resolver Settings",
+	"PS4 NID Resolver Settings",
 
 	// multiline help about the plugin
 	"PS4 NID Resolver Settings",
