@@ -409,7 +409,6 @@ void CPS4::LoadSym()
 	for(; rela < rela_end; ++rela)
 	{
 		auto type = rela->getType();
-		uint64_t symval;
 		switch(type)
 		{
 			case 7:
@@ -442,8 +441,8 @@ void CPS4::LoadSym()
 						libName += "_";
 					}
 
-					std::replace( candidate_local_name.begin(), candidate_local_name.end(), '+', '_');
-					std::replace( candidate_local_name.begin(), candidate_local_name.end(), '-', '_');
+					std::replace(candidate_local_name.begin(), candidate_local_name.end(), '+', '_');
+					std::replace(candidate_local_name.begin(), candidate_local_name.end(), '-', '_');
 					if(isdigit(candidate_local_name[0]))
 					{
 						candidate_local_name = "_" + candidate_local_name;
