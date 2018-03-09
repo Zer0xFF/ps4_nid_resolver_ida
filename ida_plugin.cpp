@@ -8,31 +8,6 @@
 #include <idp.hpp>
 #include <loader.hpp>
 
-// column widths
-const int calls_chooser_t::widths_[] =
-{
-	35,
-};
-// column headers
-const char *const calls_chooser_t::header_[] =
-{
-	"Firmware",
-};
-
-inline calls_chooser_t::calls_chooser_t(const char *title_, bool ok, std::vector<std::string> fii)
-	: chooser_t(CH_MODAL | CH_KEEP | CH_NOIDB, 1, widths_, header_, title_)
-	,	list()
-{
-	list = fii;
-}
-
-void idaapi calls_chooser_t::get_row(qstrvec_t *cols_, int *, chooser_item_attrs_t *, size_t n) const
-{
-	// generate the line
-	qstrvec_t &cols = *cols_;
-	cols[0].sprnt("%s", list.at(n).c_str());
-}
-
 //--------------------------------------------------------------------------
 // the main function of the plugin
 static bool idaapi run(size_t)
@@ -54,23 +29,15 @@ static bool idaapi run(size_t)
 	}
 	settings.Save();
 
-	std::vector<std::string> list;
-	CPS4::GetFW(list, jsonpath);
-	calls_chooser_t* ch = new calls_chooser_t("Choose FW", true, list);
-	int res = ch->choose();
+	char buf[255]; size_t size = 255;
+	get_input_file_path(buf, size);
 
-	if(res < list.size())
-	{
-		char buf[255]; size_t size = 255;
-		get_input_file_path(buf, size);
-
-		CPS4 ps4(buf);
-		ps4.LoadLibNames(settings.getAsBool("loadlibname"));
-		ps4.LoadJsonPath(settings.getAsString("path"));
-		ps4.LoadHeader();
-		ps4.LoadJsonSymFW(list.at(res));
-		ps4.LoadSym();
-	}
+	CPS4 ps4(buf);
+	ps4.LoadLibNames(settings.getAsBool("loadlibname"));
+	ps4.LoadJsonPath(settings.getAsString("path"));
+	ps4.LoadHeader();
+	ps4.LoadJsonSym();
+	ps4.LoadSym();
 
 	return true;
 }

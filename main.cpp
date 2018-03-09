@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 	{
 		ps4.LoadHeader();
 		ps4.LoadJsonPath(argv[1]);
-		ps4.LoadJsonSymFW(argv[2]);
+		ps4.LoadJsonSym();
 		ps4.LoadSym();
 	}
 	return 0;

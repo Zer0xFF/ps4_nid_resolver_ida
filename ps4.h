@@ -14,12 +14,11 @@ public:
 	void LoadJsonPath(std::string path);
 	bool LoadHeader();
 	bool LoadJsonSymFile(std::string filename, bool = true);
-	bool LoadJsonSymFW(std::string version, bool = true);
+	bool LoadJsonSym(bool = true);
 	void LoadSym();
 	bool isLoaded();
 	
 
-	static int GetFW(std::vector<std::string> &list, std::string jsonpath);
 private:
 	int LoadFile(char*);
 	static int isDirectory(const char *path);

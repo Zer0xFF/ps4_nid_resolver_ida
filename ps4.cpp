@@ -190,39 +190,12 @@ bool CPS4::FindJsonSym(const char* path, const char* name, std::string* res)
 	return false;
 }
 
-int CPS4::GetFW(std::vector<std::string> &list, std::string jsonpath)
-{
-	int res = -1;
-	DIR *dir;
-	struct dirent *ent;
-	if((dir = opendir(jsonpath.c_str())) != NULL)
-	{
-		while((ent = readdir(dir)) != NULL)
-		{
-			std::string file = ent->d_name;
-			if(file.compare(0, 1, ".") == 0)
-			{
-				continue;
-			}
-
-			file.insert(0, jsonpath + "/");
-
-			if(isDirectory(file.c_str()))
-			{
-				list.push_back(ent->d_name);
-				++res;
-			}
-		}
-	}
-	closedir(dir);
-}
-
-bool CPS4::LoadJsonSymFW(std::string version, bool clearmap)
+bool CPS4::LoadJsonSym(bool clearmap)
 {
 	if(clearmap) nidmap.clear();
 
 	int count = nidmap.size();
-	std::string path = _jsonpath + "/" + version + "/";
+	std::string path = _jsonpath + "/";
 
 	std::string filename = sprxfilename.substr(sprxfilename.find_last_of("/\\") + 1);
 	filename = filename.substr(0, filename.find_first_of(".")) + ".sprx.json";
