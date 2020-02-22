@@ -247,33 +247,69 @@ bool CPS4::LoadJsonSymFile(std::string filename, bool clearmap)
 
 	Json::Value root;
 	std::ifstream config_doc(filename.c_str(), std::ifstream::binary);
-	config_doc >> root;
 
-	for(auto& module : root["modules"])
+	if (config_doc.bad())
 	{
-		for(auto& libraries : module["libraries"])
+		msg("[x] Error opening file %s. %s", filename.c_str(), strerror(errno));
+		return false;
+	}
+
+	char c = 0;
+	bool found = false, eof = false;
+
+	do 
+	{
+		// The json files in ps4libdoc-5.05 may contain byte-order-mark which is quite annoying
+		// and can not be recognized by the json parser.  This is a quick and dirty fix for this.
+		c = static_cast<char>(config_doc.peek());
+		if (c != '{')
 		{
-			auto libname = libraries.get("name","NA").asString();
-			auto isExported = libraries.get("is_export", false).asBool();
-			for(auto& symbol : libraries["symbols"])
+			// Skips BOM bytes if there is any.
+			config_doc.read(&c, 1);
+			eof = config_doc.eof();
+		}
+		else
+		{
+			found = true;
+		}
+	} while (!found && !eof);
+
+	try
+	{
+		config_doc >> root;
+
+		for (auto& module : root["modules"])
+		{
+			for (auto& libraries : module["libraries"])
 			{
-				if(!symbol.get("name", "NA" ).asString().empty())
+				auto libname = libraries.get("name", "NA").asString();
+				auto isExported = libraries.get("is_export", false).asBool();
+				for (auto& symbol : libraries["symbols"])
 				{
-					if(!isExported && _displayLibName)
+					if (!symbol.get("name", "NA").asString().empty())
 					{
-						nidmap[symbol.get("encoded_id", "NA" ).asString()] = libname  + "::" + symbol.get("name", "NA" ).asString();
-					}
-					else
-					{
-						nidmap[symbol.get("encoded_id", "NA" ).asString()] = symbol.get("name", "NA" ).asString();
-					}
+						if (!isExported && _displayLibName)
+						{
+							nidmap[symbol.get("encoded_id", "NA").asString()] = libname + "::" + symbol.get("name", "NA").asString();
+						}
+						else
+						{
+							nidmap[symbol.get("encoded_id", "NA").asString()] = symbol.get("name", "NA").asString();
+						}
 					#if 0
-					std::cout << nidmap[symbol.get("encoded_id", "NA" ).asString()].c_str() << " NID:" << symbol.get("encoded_id", "NA" ).asString() << std::endl;
+						std::cout << nidmap[symbol.get("encoded_id", "NA").asString()].c_str() << " NID:" << symbol.get("encoded_id", "NA").asString() << std::endl;
 					#endif
+					}
 				}
 			}
 		}
 	}
+	catch (std::exception const &e)
+	{
+		msg("Json parsing error. %s\n", e.what());
+		return false;
+	}
+
 	return nidmap.size() > 0;
 }
 
